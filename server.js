@@ -8,6 +8,7 @@ app.engine('.hbs', hbs());
 app.set('view engine', '.hbs');
 
 app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {
   res.render('index');
@@ -18,7 +19,7 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/contact', (req, res) => {
-  res.render('contact', {layout: 'dark'});
+  res.render('contact');
 })
 
 app.get('/info', (req, res) => {
@@ -26,7 +27,7 @@ app.get('/info', (req, res) => {
 });
 
 app.get('/history', (req, res, next) => {
-  res.render('history');
+  res.render('history', { layout: 'dark' });
 });
 
 
@@ -35,6 +36,19 @@ app.get('/hello/:name', (req, res) => {
 });
 
 
+app.post('/contact/send-message', (req, res) => {
+
+  const { author, sender, title, message, userimage } = req.body;
+
+  if (author && sender && title && message && userimage) {
+    res.render('contact', { isSent: true, userimage });
+  }
+  else {
+    res.render('contact', { isError: true });
+  }
+
+});
+
 app.use((req, res) => {
   res.status(404).send('404 not found...');
 })
@@ -42,3 +56,4 @@ app.use((req, res) => {
 app.listen(8000, () => {
   console.log('Server is running on port: 8000');
 });
+
